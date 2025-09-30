@@ -1,0 +1,17 @@
+export const options = [
+  "Tất cả",
+  "Âm nhạc",
+  "Trò chơi",
+  "Nấu ăn",
+  "Danh sách kết hợp",
+  "Tin tức",
+  "Thể dục",
+  "Video",
+  "Bóng đá",
+  "Podcast & Radio",
+  "Live",
+  "Mới tải lên gần đây",
+  "Đã xem",
+  "Đề xuất mới",
+  "Khác",
+];

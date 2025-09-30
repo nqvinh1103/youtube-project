@@ -1,0 +1,286 @@
+.watchPage {
+  display: flex;
+  flex-direction: column;
+  background-color: #0f0f0f;
+  color: white;
+  min-height: 100vh;
+}
+
+.watchLayout {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 90px 24px 24px 24px;
+}
+
+.watchMain {
+  flex: 1 1 auto;
+  max-width: 1280px;
+}
+
+.watchPlayer {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.watchIframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.watchMeta {
+  padding: 12px 24px 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.watchTitle {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.watchSub {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.watchChannel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.watchAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 100%;
+}
+
+.watchChannelInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.watchChannelName {
+  font-size: 18px;
+}
+
+.watchStats {
+  font-size: 14px;
+  color: gray;
+}
+
+.watchActions {
+  display: flex;
+  gap: 8px;
+}
+
+.watchBtn {
+  background-color: rgb(42, 42, 42);
+  color: white;
+  border-radius: 20px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.watchDesc {
+  color: #bbb;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Channel/action row enhancements */
+.watchSubscribe {
+  background-color: #f1f1f1;
+  color: #111;
+  margin-left: 8px;
+}
+.watchLikeGroup {
+  display: flex;
+  align-items: center;
+}
+.watchDivider {
+  width: 1px;
+  height: 24px;
+  background: #444;
+  margin: 0 6px;
+}
+
+/* Expandable description */
+.watchDescBox {
+  background: #1f1f1f;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.watchDescHeader {
+  color: #e5e5e5;
+  font-weight: 500;
+}
+.watchDescText {
+  color: #cfcfcf;
+  max-height: 42px;
+  overflow: hidden;
+}
+.watchDescBox.expanded .watchDescText {
+  max-height: none;
+}
+.watchDescToggle {
+  align-self: flex-start;
+  color: #aaa;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+/* Comments */
+.watchComments {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 24px 24px 24px;
+}
+.watchCommentsHeader {
+  font-weight: 600;
+}
+.watchSort {
+  color: #aaa;
+  margin-left: 8px;
+  font-weight: 400;
+}
+.watchAddComment {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.watchCommentAvatar {
+  width: 36px;
+  height: 36px;
+  background: #3a3a3a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.watchCommentInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #444;
+  color: #fff;
+  padding: 8px 4px;
+}
+.watchCommentInput:focus {
+  outline: none;
+  border-bottom-color: #666;
+}
+.watchCommentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.watchCommentItem {
+  display: flex;
+  gap: 12px;
+}
+.watchCommentImg {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+.watchCommentBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.watchCommentMeta {
+  display: flex;
+  gap: 8px;
+  color: #aaa;
+}
+.watchCommentMeta .author {
+  color: #fff;
+  font-weight: 500;
+}
+.watchCommentText {
+  color: #ddd;
+}
+.watchCommentActions {
+  display: flex;
+  gap: 12px;
+}
+.watchCta {
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.watchAside {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 420px;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 1280px) {
+  .watchAside {
+    flex-basis: 360px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .watchAside {
+    flex-basis: 320px;
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  .watchLayout {
+    padding: 86px 12px 16px 12px;
+  }
+  .watchMain {
+    max-width: none;
+  }
+  .watchAside {
+    flex-basis: 100%;
+  }
+  .watchMeta {
+    padding: 10px 12px 0 12px;
+  }
+  .watchComments {
+    padding: 8px 12px 24px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .watchLayout {
+    padding: 74px 10px 12px 10px;
+  }
+  .watchMain {
+    max-width: none;
+  }
+  .watchAside {
+    flex-basis: 100%;
+  }
+  .watchSub {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .watchMeta {
+    padding: 10px 10px 0 10px;
+  }
+  .watchComments {
+    padding: 8px 10px 24px 10px;
+  }
+}

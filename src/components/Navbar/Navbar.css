@@ -1,0 +1,221 @@
+@import url("https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap");
+
+.navbar {
+  background-color: #0f0f0f;
+  padding: 10px 2%;
+  justify-content: space-between;
+  z-index: 10;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+/* nav-start */
+.nav-start {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  width: fit-content;
+}
+
+.navIcon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.youtubeIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  text-decoration: none;
+}
+
+.logo {
+  color: red;
+}
+
+.nav_utubeTitle {
+  font-size: 20px;
+  word-spacing: 0;
+  letter-spacing: 0;
+  font-family: "Lora", serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+}
+/* nav-center */
+.nav-center {
+  display: flex;
+  gap: 10px;
+  width: 50%;
+}
+
+.navSearchBox {
+  width: 80%;
+  display: flex;
+  position: relative;
+}
+
+.navSearchInput {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #303030;
+  border-right: none;
+  border-radius: 2px 0 0 2px;
+  background-color: #121212;
+  color: white;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  padding-left: 30px;
+}
+.navSearchInput:focus {
+  outline: none;
+}
+.navSearchInput::placeholder {
+  font-size: 15px;
+}
+
+.navSearchIcon {
+  width: 70px;
+  background-color: rgb(42, 42, 42);
+  border: 1px solid rgb(42, 42, 42);
+  border-radius: 0 20px 20px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.navMicIcon {
+  width: 40px;
+  height: 40px;
+  background-color: rgb(42, 42, 42);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* nav-end */
+.nav-end {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  justify-content: center;
+  width: fit-content;
+}
+
+.navAddIcon {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: white;
+  cursor: pointer;
+  background-color: rgb(42, 42, 42);
+  border-radius: 20px;
+  padding: 3px 15px;
+}
+
+.navAvatarIcon {
+  width: 35px;
+  height: 35px;
+  background-color: #3a3a3a;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* ========== Responsive ========== */
+/* Web Large (>=1280px) - defaults mostly apply */
+
+/* Web Small (<=1280px) */
+@media (max-width: 1280px) {
+  .nav-center {
+    width: 48%;
+  }
+  .navSearchBox {
+    width: 78%;
+  }
+}
+
+/* Tablet / Small Web (<=1024px) */
+@media (max-width: 1024px) {
+  .nav-center {
+    width: 56%;
+  }
+  .nav_utubeTitle {
+    display: none;
+  }
+  .navSearchIcon {
+    width: 56px;
+  }
+}
+
+/* Mobile Landscape (<=768px and landscape) */
+@media (max-width: 768px) and (orientation: landscape) {
+  .navbar {
+    padding: 8px 10px;
+    height: 52px;
+  }
+  .nav-center {
+    width: 60%;
+    gap: 6px;
+  }
+  .navSearchBox {
+    width: 100%;
+  }
+  .navSearchInput {
+    padding: 8px 10px 8px 24px;
+  }
+  .navSearchIcon {
+    width: 48px;
+  }
+  .navMicIcon {
+    display: none;
+  }
+  .nav-end {
+    gap: 10px;
+  }
+}
+
+/* Mobile Portrait (<=480px) */
+@media (max-width: 480px) {
+  .navbar {
+    padding: 8px 8px;
+    height: 50px;
+  }
+  .nav-center {
+    width: 100%;
+  }
+  .navSearchBox {
+    width: 100%;
+  }
+  .navSearchInput {
+    padding-left: 16px;
+    font-size: 14px;
+  }
+  .navSearchIcon {
+    width: 44px;
+  }
+  .navMicIcon,
+  .navAddIcon {
+    display: none;
+  }
+}
