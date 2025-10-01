@@ -1,11 +1,12 @@
 import axios from "axios";
+import { API_CONFIG } from "../config/apiConfig";
 
 export const apiClient = axios.create({
-  baseURL: "https://youtube.googleapis.com/youtube/v3/",
+  baseURL: API_CONFIG.YOUTUBE.BASE_URL,
   params: {
     key: import.meta.env.VITE_YT_API_KEY,
   },
-  timeout: 20000,
+  timeout: API_CONFIG.YOUTUBE.TIMEOUT,
   headers: {
     "Content-Type": "application/json",
   },

@@ -1,27 +1,20 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { apiClient } from "../../api/api";
+import { commentService } from "../../services/commentService";
 
-// Thunk để lấy comments
+// Thunk để lấy comments - Sử dụng service layer
 export const fetchVideoComments = createAsyncThunk(
   "comments/fetchComments",
   async ({ videoId, maxResults = 20, order = "time" }, { rejectWithValue }) => {
     try {
-      console.log("Fetching comments for video:", videoId);
-      const response = await apiClient.get("commentThreads", {
-        params: {
-          part: "snippet,replies",
-          videoId: videoId,
-          maxResults: maxResults,
-          order: order,
-        },
-      });
-      console.log("Comments response:", response.data);
-      return response.data.items;
+      const result = await commentService.fetchVideoComments(
+        videoId,
+        maxResults,
+        order
+      );
+      return result;
     } catch (error) {
       console.error("Comments error:", error);
-      return rejectWithValue(
-        error.response?.data?.error?.message || error.message
-      );
+      return rejectWithValue(error.message);
     }
   }
 );

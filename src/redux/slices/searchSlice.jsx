@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { apiClient } from "../../api/api";
+import { searchService } from "../../services/searchService";
 
-// Thunk để search videos (hỗ trợ cả basic và advanced search)
 export const searchVideos = createAsyncThunk(
   "search/searchVideos",
   async (
@@ -13,11 +12,13 @@ export const searchVideos = createAsyncThunk(
       duration,
       type = "video",
       maxResults = 25,
+      pageToken = null,
+      isLoadMore = false,
     },
     { rejectWithValue }
   ) => {
     try {
-      console.log("Searching for:", {
+      const result = await searchService.searchVideos({
         query,
         categoryId,
         order,
@@ -25,65 +26,12 @@ export const searchVideos = createAsyncThunk(
         duration,
         type,
         maxResults,
+        pageToken,
       });
-
-      // Xây dựng params cơ bản
-      const params = {
-        part: "snippet",
-        q: query,
-        type: type,
-        maxResults: maxResults,
-        regionCode: "VN",
-        order: order,
-      };
-
-      // Thêm filters nếu có
-      if (categoryId && categoryId !== "0") {
-        params.videoCategoryId = categoryId;
-      }
-      if (publishedAfter) {
-        params.publishedAfter = publishedAfter;
-      }
-      if (duration) {
-        params.videoDuration = duration;
-      }
-
-      const response = await apiClient.get("search", { params });
-      console.log("Search response:", response.data);
-
-      // Lấy thêm thông tin chi tiết cho từng video
-      if (response.data.items && response.data.items.length > 0) {
-        const videoIds = response.data.items
-          .map((item) => item.id.videoId)
-          .join(",");
-        const detailsResponse = await apiClient.get("videos", {
-          params: {
-            part: "contentDetails,statistics",
-            id: videoIds,
-          },
-        });
-
-        // Merge thông tin chi tiết vào search results
-        const enrichedItems = response.data.items.map((item) => {
-          const details = detailsResponse.data.items.find(
-            (detail) => detail.id === item.id.videoId
-          );
-          return {
-            ...item,
-            contentDetails: details?.contentDetails,
-            statistics: details?.statistics,
-          };
-        });
-
-        return enrichedItems;
-      }
-
-      return response.data.items;
+      return { ...result, isLoadMore };
     } catch (error) {
       console.error("Search error:", error);
-      return rejectWithValue(
-        error.response?.data?.error?.message || error.message
-      );
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -95,11 +43,13 @@ const searchSlice = createSlice({
     loading: false,
     error: null,
     query: "",
+    nextPageToken: null,
   },
   reducers: {
     clearSearchResults: (state) => {
       state.results = [];
       state.query = "";
+      state.nextPageToken = null;
     },
     setSearchQuery: (state, action) => {
       state.query = action.payload;
@@ -107,14 +57,19 @@ const searchSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Search videos
       .addCase(searchVideos.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(searchVideos.fulfilled, (state, action) => {
         state.loading = false;
-        state.results = action.payload;
+        if (action.payload.isLoadMore) {
+          state.results = [...state.results, ...action.payload.items];
+        } else {
+          state.results = action.payload.items;
+          state.query = action.meta.arg.query;
+        }
+        state.nextPageToken = action.payload.nextPageToken;
       })
       .addCase(searchVideos.rejected, (state, action) => {
         state.loading = false;

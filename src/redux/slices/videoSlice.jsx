@@ -1,56 +1,46 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { apiClient } from "../../api/api";
+import { videoService } from "../../services/videoService";
 
-// Thunk để fetch video từ YouTube API
+// Thunk để fetch video từ YouTube API - Sử dụng service layer
 export const fetchPopularVideos = createAsyncThunk(
   "videos/fetchPopular",
-  async (pageToken = null) => {
-    const response = await apiClient.get("videos", {
-      params: {
-        part: "snippet,contentDetails,statistics",
-        chart: "mostPopular",
-        regionCode: "VN",
-        maxResults: 20,
-        pageToken: pageToken || "",
-      },
-    });
-    return {
-      items: response.data.items,
-      nextPageToken: response.data.nextPageToken,
-    };
+  async (pageToken = null, { rejectWithValue }) => {
+    try {
+      const result = await videoService.fetchPopularVideos(pageToken);
+      return result;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 
-// Thunk để lấy chi tiết video
+// Thunk để lấy chi tiết video - Sử dụng service layer
 export const fetchVideoDetail = createAsyncThunk(
   "videos/fetchDetail",
   async ({ videoId }, { rejectWithValue }) => {
     try {
       console.log("Fetching video detail for:", videoId);
-
-      // Validate videoId
-      if (!videoId) {
-        throw new Error("Video ID is required");
-      }
-
-      const response = await apiClient.get("videos", {
-        params: {
-          part: "snippet,contentDetails,statistics",
-          id: videoId,
-        },
-      });
-      console.log("Video detail response:", response.data);
-
-      if (!response.data.items || response.data.items.length === 0) {
-        throw new Error("Video not found");
-      }
-
-      return response.data.items[0];
+      const result = await videoService.fetchVideoDetail(videoId);
+      console.log("Video detail response:", result);
+      return result;
     } catch (error) {
       console.error("Video detail error:", error);
-      return rejectWithValue(
-        error.response?.data?.error?.message || error.message
-      );
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+// Thunk để lấy related videos - Sử dụng service layer
+export const fetchRelatedVideos = createAsyncThunk(
+  "videos/fetchRelated",
+  async ({ videoId }, { rejectWithValue }) => {
+    try {
+      console.log("Fetching related videos for:", videoId);
+      const result = await videoService.fetchRelatedVideos(videoId);
+      return result;
+    } catch (error) {
+      console.error("Related videos error:", error);
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -68,10 +58,19 @@ const videoSlice = createSlice({
     currentVideo: null,
     detailLoading: false,
     detailError: null,
+
+    // Related videos
+    relatedVideos: [],
+    relatedLoading: false,
+    relatedError: null,
   },
   reducers: {
     clearCurrentVideo: (state) => {
       state.currentVideo = null;
+    },
+    clearRelatedVideos: (state) => {
+      state.relatedVideos = [];
+      state.relatedError = null;
     },
   },
   extraReducers: (builder) => {
@@ -103,9 +102,23 @@ const videoSlice = createSlice({
       .addCase(fetchVideoDetail.rejected, (state, action) => {
         state.detailLoading = false;
         state.detailError = action.payload || action.error.message;
+      })
+
+      // Related videos
+      .addCase(fetchRelatedVideos.pending, (state) => {
+        state.relatedLoading = true;
+        state.relatedError = null;
+      })
+      .addCase(fetchRelatedVideos.fulfilled, (state, action) => {
+        state.relatedLoading = false;
+        state.relatedVideos = action.payload;
+      })
+      .addCase(fetchRelatedVideos.rejected, (state, action) => {
+        state.relatedLoading = false;
+        state.relatedError = action.payload || action.error.message;
       });
   },
 });
 
-export const { clearCurrentVideo } = videoSlice.actions;
+export const { clearCurrentVideo, clearRelatedVideos } = videoSlice.actions;
 export default videoSlice.reducer;

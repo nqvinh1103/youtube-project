@@ -1,25 +1,16 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { apiClient } from "../../api/api";
+import { categoryService } from "../../services/categoryService";
 
-// Thunk để lấy video categories
+// Thunk để lấy video categories - Sử dụng service layer
 export const fetchVideoCategories = createAsyncThunk(
   "categories/fetchCategories",
   async (_, { rejectWithValue }) => {
     try {
-      console.log("Fetching video categories");
-      const response = await apiClient.get("videoCategories", {
-        params: {
-          part: "snippet",
-          regionCode: "VN",
-        },
-      });
-      console.log("Categories response:", response.data);
-      return response.data.items;
+      const result = await categoryService.fetchVideoCategories();
+      return result;
     } catch (error) {
       console.error("Categories error:", error);
-      return rejectWithValue(
-        error.response?.data?.error?.message || error.message
-      );
+      return rejectWithValue(error.message);
     }
   }
 );

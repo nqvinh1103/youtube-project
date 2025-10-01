@@ -2,9 +2,10 @@ import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useOutletContext } from "react-router-dom";
 import { options } from "../../mocks/options";
-import { clearSearchResults } from "../../redux/slices/searchSlice";
+import { searchVideos } from "../../redux/slices/searchSlice";
 import { fetchPopularVideos } from "../../redux/slices/videoSlice";
 import { formatDuration, formatViewCount } from "../../utils/videoUtils";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 import "./Homepage.css";
 import OptionsBar from "./OptionsBar";
 
@@ -60,42 +61,75 @@ const Homepage = () => {
     results: searchResults,
     loading: searchLoading,
     error: searchError,
+    nextPageToken: searchNextPageToken,
+    query: searchQuery,
   } = useSelector((state) => state.search);
 
   useEffect(() => {
     if (items.length === 0) {
       dispatch(fetchPopularVideos());
     }
-  }, [dispatch]);
+  }, [dispatch, items.length]);
 
   useEffect(() => {
-    if (!loadMoreRef.current) return;
+    const currentRef = loadMoreRef.current;
+    if (!currentRef) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (
-          entries[0].isIntersecting &&
-          !loading &&
-          nextPageToken &&
-          searchResults.length === 0
-        ) {
-          dispatch(fetchPopularVideos(nextPageToken));
+        if (entries[0].isIntersecting && !loading && !searchLoading) {
+          if (searchResults.length === 0 && nextPageToken) {
+            dispatch(fetchPopularVideos(nextPageToken));
+          } else if (
+            searchResults.length > 0 &&
+            searchNextPageToken &&
+            searchQuery
+          ) {
+            dispatch(
+              searchVideos({
+                query: searchQuery,
+                pageToken: searchNextPageToken,
+                isLoadMore: true,
+              })
+            );
+          }
         }
       },
       { threshold: 1.0 }
     );
 
-    observer.observe(loadMoreRef.current);
+    observer.observe(currentRef);
 
     return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
-  }, [dispatch, loading, nextPageToken, searchResults.length]);
+  }, [
+    dispatch,
+    loading,
+    nextPageToken,
+    searchResults.length,
+    searchLoading,
+    searchNextPageToken,
+    searchQuery,
+  ]);
 
-  if (loading) return <h2>Loading...</h2>;
-  if (error) return <h2>Error: {error}</h2>;
+  if (loading && items.length === 0) {
+    return (
+      <div className={`${sideNavbar ? "homePage" : "homePage-full"}`}>
+        <LoadingSpinner size="large" text="Đang tải video..." />
+      </div>
+    );
+  }
+
+  if (error && items.length === 0) {
+    return (
+      <div className={`${sideNavbar ? "homePage" : "homePage-full"}`}>
+        <h2>Lỗi: {error}</h2>
+      </div>
+    );
+  }
 
   const videosToShow = searchResults.length > 0 ? searchResults : items;
   const isLoading = searchLoading;
@@ -117,22 +151,28 @@ const Homepage = () => {
           }}
         >
           🔍 Đang hiển thị kết quả tìm kiếm -
-          <span
-            onClick={() => dispatch(clearSearchResults())}
-            style={{
-              color: "#1976d2",
-              cursor: "pointer",
-              textDecoration: "underline",
-              marginLeft: "5px",
-            }}
-          >
-            Xem video phổ biến
-          </span>
         </div>
       )}
 
-      {isLoading && <h2>Đang tìm kiếm...</h2>}
-      {hasError && <h2>Lỗi tìm kiếm: {hasError}</h2>}
+      {isLoading && (
+        <div style={{ padding: "20px", textAlign: "center" }}>
+          <LoadingSpinner size="medium" text="Đang tìm kiếm video..." />
+        </div>
+      )}
+      {hasError && (
+        <div
+          style={{
+            padding: "20px",
+            textAlign: "center",
+            color: "#d32f2f",
+            backgroundColor: "#ffebee",
+            margin: "10px",
+            borderRadius: "4px",
+          }}
+        >
+          <h3>Lỗi tìm kiếm: {hasError}</h3>
+        </div>
+      )}
 
       <div className="homeMainPage">
         {videosToShow.map((video, index) => (
@@ -140,14 +180,51 @@ const Homepage = () => {
         ))}
       </div>
 
-      {!searchResults.length && (
-        <div ref={loadMoreRef} style={{ height: "20px", margin: "10px" }}>
-          {loading && <h4>Đang tải thêm...</h4>}
-          {!nextPageToken && !loading && (
-            <h4 style={{ textAlign: "center" }}>Đã hết video để tải</h4>
+      <div ref={loadMoreRef} style={{ margin: "20px 0" }}>
+        {/* Loading indicator cho popular videos */}
+        {loading && items.length > 0 && searchResults.length === 0 && (
+          <LoadingSpinner size="medium" text="Đang tải thêm video..." />
+        )}
+
+        {/* Loading indicator cho search results */}
+        {searchLoading && searchResults.length > 0 && (
+          <LoadingSpinner
+            size="medium"
+            text="Đang tải thêm kết quả tìm kiếm..."
+          />
+        )}
+
+        {/* End message cho popular videos */}
+        {!nextPageToken &&
+          !loading &&
+          items.length > 0 &&
+          searchResults.length === 0 && (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "20px",
+                color: "#666",
+                fontSize: "14px",
+              }}
+            >
+              🎉 Đã tải hết video có sẵn
+            </div>
           )}
-        </div>
-      )}
+
+        {/* End message cho search results */}
+        {!searchNextPageToken && !searchLoading && searchResults.length > 0 && (
+          <div
+            style={{
+              textAlign: "center",
+              padding: "20px",
+              color: "#666",
+              fontSize: "14px",
+            }}
+          >
+            🔍 Đã tải hết kết quả tìm kiếm
+          </div>
+        )}
+      </div>
 
       {videosToShow.length === 0 && !isLoading && !hasError && (
         <div className="no-results">
