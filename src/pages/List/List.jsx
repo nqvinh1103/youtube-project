@@ -5,6 +5,7 @@ import OptionsBar from "../../components/Homepage/OptionsBar";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import VideoListItem from "../../components/Video/VideoListItem";
 import { options } from "../../mocks/options";
+import { fetchChannelsInfo } from "../../redux/slices/channelSlice";
 import { searchVideos } from "../../redux/slices/searchSlice";
 import { fetchPopularVideos } from "../../redux/slices/videoSlice";
 import "./List.css";
@@ -24,8 +25,8 @@ const List = () => {
     loading: searchLoading,
     error: searchError,
     nextPageToken: searchNextPageToken,
-    query: searchQuery,
   } = useSelector((state) => state.search);
+  const { channels: channelMap } = useSelector((state) => state.channels);
 
   const q = searchParams.get("q") || "";
   const categoryId = searchParams.get("category") || "0";
@@ -41,8 +42,27 @@ const List = () => {
           maxResults: 50,
         })
       );
+    } else if (items.length === 0) {
+      dispatch(fetchPopularVideos());
     }
-  }, [dispatch, q, categoryId, order]);
+  }, [dispatch, q, categoryId, order, items.length]);
+
+  useEffect(() => {
+    const currentVideos = q ? searchResults : items;
+    if (currentVideos.length > 0) {
+      const channelIds = currentVideos
+        .map((video) => video.snippet?.channelId)
+        .filter(Boolean);
+
+      const uncachedChannelIds = channelIds.filter(
+        (channelId) => !channelMap[channelId]
+      );
+
+      if (uncachedChannelIds.length > 0) {
+        dispatch(fetchChannelsInfo(uncachedChannelIds));
+      }
+    }
+  }, [dispatch, q, searchResults, items, channelMap]);
 
   useEffect(() => {
     const currentRef = loadMoreRef.current;
@@ -50,21 +70,20 @@ const List = () => {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !searchLoading) {
-          if (searchResults.length === 0 && nextPageToken) {
-            dispatch(fetchPopularVideos(nextPageToken));
-          } else if (
-            searchResults.length > 0 &&
-            searchNextPageToken &&
-            searchQuery
-          ) {
+        if (entries[0].isIntersecting && !searchLoading && !loading) {
+          if (q && searchNextPageToken) {
             dispatch(
               searchVideos({
-                query: searchQuery,
+                query: q,
+                categoryId: categoryId !== "0" ? categoryId : undefined,
+                order: order,
                 pageToken: searchNextPageToken,
                 isLoadMore: true,
+                maxResults: 50,
               })
             );
+          } else if (!q && nextPageToken) {
+            dispatch(fetchPopularVideos(nextPageToken));
           }
         }
       },
@@ -82,10 +101,11 @@ const List = () => {
     dispatch,
     loading,
     nextPageToken,
-    searchResults.length,
     searchLoading,
     searchNextPageToken,
-    searchQuery,
+    q,
+    categoryId,
+    order,
   ]);
 
   if (loading && items.length === 0) {
@@ -118,18 +138,23 @@ const List = () => {
         </div>
       )}
 
-      {searchResults.map((video, idx) => (
-        <VideoListItem key={video.id?.videoId || idx} {...video} />
+      {/* Hiển thị search results hoặc popular videos */}
+      {(q ? searchResults : items).map((video, idx) => (
+        <VideoListItem
+          key={video.id?.videoId || video.id || idx}
+          {...video}
+          channelMap={channelMap}
+        />
       ))}
 
       <div ref={loadMoreRef} style={{ margin: "20px 0" }}>
         {/* Loading indicator cho popular videos */}
-        {loading && items.length > 0 && searchResults.length === 0 && (
+        {loading && items.length > 0 && !q && (
           <LoadingSpinner size="medium" text="Đang tải thêm video..." />
         )}
 
         {/* Loading indicator cho search results */}
-        {searchLoading && searchResults.length > 0 && (
+        {searchLoading && searchResults.length > 0 && q && (
           <LoadingSpinner
             size="medium"
             text="Đang tải thêm kết quả tìm kiếm..."
@@ -137,24 +162,7 @@ const List = () => {
         )}
 
         {/* End message cho popular videos */}
-        {!nextPageToken &&
-          !loading &&
-          items.length > 0 &&
-          searchResults.length === 0 && (
-            <div
-              style={{
-                textAlign: "center",
-                padding: "20px",
-                color: "#666",
-                fontSize: "14px",
-              }}
-            >
-              🎉 Đã tải hết video có sẵn
-            </div>
-          )}
-
-        {/* End message cho search results */}
-        {!searchNextPageToken && !searchLoading && searchResults.length > 0 && (
+        {!nextPageToken && !loading && items.length > 0 && !q && (
           <div
             style={{
               textAlign: "center",
@@ -163,18 +171,37 @@ const List = () => {
               fontSize: "14px",
             }}
           >
-            🔍 Đã tải hết kết quả tìm kiếm
+            🎉 Đã tải hết video có sẵn
           </div>
         )}
+
+        {/* End message cho search results */}
+        {!searchNextPageToken &&
+          !searchLoading &&
+          searchResults.length > 0 &&
+          q && (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "20px",
+                color: "#666",
+                fontSize: "14px",
+              }}
+            >
+              🔍 Đã tải hết kết quả tìm kiếm
+            </div>
+          )}
       </div>
 
-      {searchResults.length === 0 && !searchLoading && !searchError && q && (
+      {/* No results message */}
+      {q && searchResults.length === 0 && !searchLoading && !searchError && (
         <div style={{ color: "#aaa", padding: "12px 0" }}>
           Không tìm thấy kết quả cho "{q}"
         </div>
       )}
 
-      {!q && (
+      {/* Empty state when no search query */}
+      {!q && items.length === 0 && !loading && !error && (
         <div style={{ color: "#aaa", padding: "12px 0" }}>
           Nhập từ khóa để tìm kiếm
         </div>

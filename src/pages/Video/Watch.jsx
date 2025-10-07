@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import VideoListItem from "../../components/Video/VideoListItem";
 import {
   clearComments,
@@ -20,6 +20,7 @@ import "./Watch.css";
 const Watch = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // Lấy state từ Redux
   const { currentVideo, detailLoading, detailError } = useSelector(
@@ -111,11 +112,12 @@ const Watch = () => {
   return (
     <div className={`watchPage`}>
       <div className="watchLayout">
+        {/* Video Player */}
         <div className="watchMain">
           <div className="watchPlayer">
             <iframe
               className="watchIframe"
-              src={`https://www.youtube.com/embed/${currentVideo.id}`}
+              src={`https://www.youtube.com/embed/${currentVideo.id}?autoplay=1`}
               title={currentVideo.snippet?.title}
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -131,6 +133,9 @@ const Watch = () => {
                   className="watchAvatar"
                   src={currentVideo.snippet?.thumbnails?.default?.url}
                   alt={currentVideo.snippet?.channelTitle}
+                  onClick={() =>
+                    navigate(`/channel/${currentVideo.snippet?.channelId}`)
+                  }
                 />
                 <div className="watchChannelInfo">
                   <div className="watchChannelName">
@@ -236,6 +241,7 @@ const Watch = () => {
             </div>
           </div>
         </div>
+        {/* Related Videos */}
         <div className="watchAside">
           {relatedLoading && (
             <div className="loading-text">Đang tải video liên quan...</div>

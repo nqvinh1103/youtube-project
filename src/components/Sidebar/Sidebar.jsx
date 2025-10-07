@@ -9,8 +9,13 @@ import SmartDisplayOutlinedIcon from "@mui/icons-material/SmartDisplayOutlined";
 import SubscriptionsOutlinedIcon from "@mui/icons-material/SubscriptionsOutlined";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 
+import { useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 const Sidebar = ({ sideNavbar }) => {
+  const navigate = useNavigate();
+  const handleNavigate = () => {
+    navigate("/channel");
+  };
   return (
     <div
       className={
@@ -79,7 +84,7 @@ const Sidebar = ({ sideNavbar }) => {
             style={{ fontSize: "15px", marginLeft: "0px" }}
           />
         </div>
-        <div className={`home-sidebarTopOption`}>
+        <div onClick={handleNavigate} className={`home-sidebarTopOption`}>
           <img
             className="home-sidebarImgLogo"
             src="https://yt3.ggpht.com/7HR7AS1zqCg3HDKKhU734Hoqaz277rXAkSkjJlui8cf_jrw31GZF2aPn3i9JS6Hhwgcxutp0jg=s176-c-k-c0x00ffffff-no-rj-mo"
@@ -87,7 +92,7 @@ const Sidebar = ({ sideNavbar }) => {
           />
           <div className="home-sidebarTopOptionTitle">UR · Cristiano</div>
         </div>
-        <div className={`home-sidebarTopOption`}>
+        <div onClick={handleNavigate} className={`home-sidebarTopOption`}>
           <img
             className="home-sidebarImgLogo"
             src="https://yt3.googleusercontent.com/xhro86GPyaXdFr5WvEcf4CFKfTf5ZDJXEGoh6D_LcwfjbacuOYpRIhRDtwTcsuiHS3nYaZef=s160-c-k-c0x00ffffff-no-rj"
@@ -95,7 +100,7 @@ const Sidebar = ({ sideNavbar }) => {
           />
           <div className="home-sidebarTopOptionTitle">YBY1</div>
         </div>
-        <div className={`home-sidebarTopOption`}>
+        <div onClick={handleNavigate} className={`home-sidebarTopOption`}>
           <img
             className="home-sidebarImgLogo"
             src="https://yt3.googleusercontent.com/0NZixqCnY1-iO7GQqNQu7Y2-pQrMLZVe-r8iMxtEf3qdDb_QKr9OuYiaB_MO0aKvOom2HpITKg=s160-c-k-c0x00ffffff-no-rj"

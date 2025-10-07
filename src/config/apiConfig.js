@@ -6,7 +6,7 @@
 export const API_CONFIG = {
   // YouTube API settings
   YOUTUBE: {
-    BASE_URL: "https://youtube.googleapis.com/youtube/v3/",
+    BASE_URL: "https://www.googleapis.com/youtube/v3/",
     TIMEOUT: 20000,
     DEFAULT_REGION: "VN",
     DEFAULT_MAX_RESULTS: 20,
@@ -37,7 +37,9 @@ export const ENDPOINTS = {
   VIDEOS: "videos",
   SEARCH: "search",
   CHANNELS: "channels",
+  CHANNEL_SECTIONS: "channelSections",
   PLAYLISTS: "playlists",
+  PLAYLIST_ITEMS: "playlistItems",
   COMMENTS: "commentThreads",
 };
 

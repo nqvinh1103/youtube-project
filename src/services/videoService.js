@@ -54,19 +54,49 @@ class VideoService {
 
   async fetchRelatedVideos(videoId, maxResults = 20) {
     try {
+      const videoDetail = await this.fetchVideoDetail(videoId);
+      const videoTitle = videoDetail.snippet?.title || "";
+      const channelTitle = videoDetail.snippet?.channelTitle || "";
+
+      const searchQuery = `${videoTitle} ${channelTitle}`.trim();
+
       const response = await apiClient.get("search", {
         params: {
           part: "snippet",
           type: "video",
-          relatedToVideoId: videoId,
-          maxResults,
+          q: searchQuery,
+          order: "relevance",
+          maxResults: maxResults + 5,
+          regionCode: "VN",
         },
       });
 
-      return response.data.items || [];
+      const relatedVideos = (response.data.items || []).filter(
+        (item) => item.id?.videoId !== videoId
+      );
+
+      return relatedVideos.slice(0, maxResults);
     } catch (error) {
       console.error("Error fetching related videos:", error);
-      throw this.handleApiError(error);
+      try {
+        const fallbackResponse = await apiClient.get("videos", {
+          params: {
+            part: "snippet,contentDetails,statistics",
+            chart: "mostPopular",
+            regionCode: "VN",
+            maxResults: maxResults + 5,
+          },
+        });
+
+        const fallbackVideos = (fallbackResponse.data.items || []).filter(
+          (item) => item.id !== videoId
+        );
+
+        return fallbackVideos.slice(0, maxResults);
+      } catch (fallbackError) {
+        console.error("Fallback also failed:", fallbackError);
+        throw this.handleApiError(error);
+      }
     }
   }
 

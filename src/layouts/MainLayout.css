@@ -3,4 +3,6 @@
   width: 100%;
   padding: 10px 0px 0 0px;
   box-sizing: border-box;
+  background-color: #0f0f0f;
+  min-height: 100vh;
 }

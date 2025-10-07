@@ -20,7 +20,7 @@
 
 .homePage-options {
   padding-top: 20px;
-  padding-bottom: 20px;
+  margin-bottom: 20px;
   display: flex;
   position: fixed;
   top: 56px;
@@ -57,7 +57,7 @@
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   width: 100%;
   gap: 10px;
-  padding: 90px 20px 20px 20px;
+  padding: 120px 20px 20px 20px;
 }
 
 .youtube-video {

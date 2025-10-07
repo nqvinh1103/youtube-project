@@ -4,9 +4,9 @@ import MicIcon from "@mui/icons-material/Mic";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import SearchIcon from "@mui/icons-material/Search";
 import YouTubeIcon from "@mui/icons-material/YouTube";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   clearSearchResults,
   searchVideos,
@@ -18,6 +18,12 @@ const Navbar = (props) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [query, setQuery] = useState("");
+  const [searchTerm] = useSearchParams();
+  const searchParam = searchTerm.get("q") || "";
+
+  useEffect(() => {
+    setQuery(searchParam);
+  }, [searchParam]);
 
   const sideNavbarFunc = () => {
     setSideNavbarHandler(!sideNavbar);
@@ -29,7 +35,7 @@ const Navbar = (props) => {
 
     dispatch(searchVideos({ query: q }));
 
-    navigate("/");
+    navigate(`/list?q=${encodeURIComponent(q)}`);
   }, [navigate, query, dispatch]);
 
   const onClearSearch = useCallback(() => {

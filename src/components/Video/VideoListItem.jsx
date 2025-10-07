@@ -12,8 +12,8 @@ const VideoListItem = ({
   snippet,
   statistics,
   contentDetails,
+  channelMap,
 
-  // Props từ mock data (fallback)
   thumbnailUrl,
   duration,
   title,
@@ -28,7 +28,14 @@ const VideoListItem = ({
   const videoTitle = snippet?.title || title;
   const videoChannelName = snippet?.channelTitle || channelName;
   const videoThumbnail = snippet?.thumbnails?.medium?.url || thumbnailUrl;
-  const videoAvatar = snippet?.thumbnails?.default?.url || avatarUrl;
+
+  // Lấy channel avatar từ channelMap hoặc fallback
+  const channelId = snippet?.channelId;
+  const videoAvatar =
+    channelMap?.[channelId]?.thumbnail ||
+    channelMap?.[channelId]?.mediumThumbnail ||
+    snippet?.thumbnails?.default?.url ||
+    avatarUrl;
   const videoDescription = snippet?.description || description;
   const videoDuration = contentDetails?.duration
     ? formatDuration(contentDetails.duration)
