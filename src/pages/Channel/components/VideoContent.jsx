@@ -13,10 +13,11 @@ const VideoContent = ({ videoSort, onSortChange }) => {
   );
   const popularVideos = popularData?.items || [];
   console.log("Popular Videos:", popularVideos);
+  console.log("Total videos fetched:", popularVideos.length);
 
   useEffect(() => {
     if (channelId && (!popularVideos || popularVideos.length === 0)) {
-      dispatch(fetchPopularVideos({ channelId, maxResults: 12 }));
+      dispatch(fetchPopularVideos({ channelId, maxResults: 50 }));
     }
   }, [dispatch, channelId]);
   return (
@@ -45,9 +46,14 @@ const VideoContent = ({ videoSort, onSortChange }) => {
 
       {/* Video Grid */}
       <div className="video-grid">
-        {popularVideos.map((video, index) => (
-          <VideoCard key={video.id?.videoId || index} {...video} />
-        ))}
+        {popularVideos.length > 0 ? (
+          popularVideos.map((video, index) => {
+            console.log(`Rendering video ${index + 1}:`, video.snippet?.title);
+            return <VideoCard key={video.id?.videoId || index} {...video} />;
+          })
+        ) : (
+          <p>Đang tải videos...</p>
+        )}
       </div>
     </>
   );
