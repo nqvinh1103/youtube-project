@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useOutletContext, useSearchParams } from "react-router-dom";
-import OptionsBar from "../../components/Homepage/OptionsBar";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import VideoListItem from "../../components/Video/VideoListItem";
 import { options } from "../../mocks/options";
 import { fetchChannelsInfo } from "../../redux/slices/channelSlice";
 import { searchVideos } from "../../redux/slices/searchSlice";
 import { fetchPopularVideos } from "../../redux/slices/videoSlice";
+import OptionsBar from "../Homepage/OptionsBar";
 import "./List.css";
 
 const List = () => {

@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useOutletContext } from "react-router-dom";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import VideoCard from "../../components/VideoCard/VideoCard";
 import { options } from "../../mocks/options";
 import { fetchChannelsInfo } from "../../redux/slices/channelSlice";
 import { fetchPopularVideos } from "../../redux/slices/videoSlice";
-import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
-import VideoCard from "../VideoCard/VideoCard";
 import "./Homepage.css";
 import OptionsBar from "./OptionsBar";
 

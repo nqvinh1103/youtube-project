@@ -1,8 +1,6 @@
-import React from "react";
 import { Link } from "react-router-dom";
+import "../../pages/Homepage/Homepage.css";
 import { formatDuration, formatViewCount } from "../../utils/videoUtils";
-import "../Homepage/Homepage.css";
-
 const VideoCard = ({ id, snippet, statistics, contentDetails, channelMap }) => {
   const videoId = id?.videoId || id;
   const videoDuration = contentDetails?.duration
