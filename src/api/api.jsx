@@ -24,6 +24,11 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     console.error("API Error:", error);
+    console.error(
+      "API Key being used:",
+      import.meta.env.VITE_YT_API_KEY?.substring(0, 10) + "..."
+    );
+    console.error("Error details:", error.response?.data);
     return Promise.reject(error);
   }
 );
